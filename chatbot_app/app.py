@@ -5,9 +5,12 @@ from dotenv import load_dotenv
 
 app = Flask(__name__)
 
+# Load environment variables from .env file
+load_dotenv()
+
 # Replace with your own Facebook Page Access Token and Verify Token
-PAGE_ACCESS_TOKEN = "your_page_access_token"
-VERIFY_TOKEN = "your_verify_token"
+PAGE_ACCESS_TOKEN = os.environ.get('PAGE_ACCESS_TOKEN')
+VERIFY_TOKEN = os.environ.get('VERIFY_TOKEN')
 
 
 @app.route("/webhook", methods=["GET", "POST"])
@@ -21,6 +24,7 @@ def webhook():
     else:
         # Handle incoming messages
         output = request.get_json()
+        print(f"Received payload: {output}")
         for event in output["entry"]:
             messaging = event["messaging"]
             for message in messaging:
@@ -42,9 +46,11 @@ def get_user_name(user_id):
 def send_message(recipient_id, text):
     data = {"recipient": {"id": recipient_id}, "message": {"text": text}}
     url = (
-        f"https://graph.facebook.com/v13.0/me/messages?access_token={PAGE_ACCESS_TOKEN}"
+        f"https://graph.facebook.com/v16.0/me/messages?access_token={PAGE_ACCESS_TOKEN}"
     )
     requests.post(url, json=data)
+    # print("-----------------------")
+    # print(response.content)
 
 
 if __name__ == "__main__":
